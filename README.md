@@ -14,7 +14,7 @@ uv pip install -r requirements.txt
 
 Run
 ```bash
-uvicorn main:app --reload
+uvicorn product.main:app --reload
 ```
 ---
 
