@@ -8,7 +8,22 @@ from .database import engine, SessionLocal
 from typing import List
 from passlib.context import CryptContext
 
-app = FastAPI()
+app = FastAPI(
+    title="Products API",
+    description="Get details for all the products on our website including the sellers.",
+    terms_of_service="http://www.google.com",
+    contact={
+        "Developer name": "Marvin Ernst",
+        "website": "http://www.google.com",
+        "email": "demo@gmail.com",
+    },
+    license_info={
+        "name":"MIT license",
+        "url":"http://www.google.com",
+    },
+    #docs_url="/documentation",
+    #redoc_url=None,
+)
 
 models.Base.metadata.create_all(engine)
 
@@ -22,20 +37,20 @@ def get_db():
         db.close()
 
 
-@app.delete('/product/{id}')
+@app.delete('/product/{id}', tags=['Products'])
 def delete(id, db: Session = Depends(get_db)):
     db.query(models.Product).filter(models.Product.id == id).delete(synchronize_session=False)
     db.commit()
     return {'Product deleted.'}
 
 
-@app.get('/products', response_model=List[schemas.DisplayProduct])
+@app.get('/products', response_model=List[schemas.DisplayProduct], tags=['Products'])
 def products(db: Session = Depends(get_db)):
     products = db.query(models.Product).all()
     return products
 
 
-@app.get('/product/{id}', response_model=schemas.DisplayProduct)
+@app.get('/product/{id}', response_model=schemas.DisplayProduct, tags=['Products'])
 def product(id, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if  not product:
@@ -43,7 +58,7 @@ def product(id, db: Session = Depends(get_db)):
     return product
 
 
-@app.put('/product/{id}')
+@app.put('/product/{id}', tags=['Products'])
 def update(id, request: schemas.Product, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == id)
     if not product.first():
@@ -53,7 +68,7 @@ def update(id, request: schemas.Product, db: Session = Depends(get_db)):
     return {'Product successfully updated.'}
 
 
-@app.post('/product', status_code=status.HTTP_201_CREATED)
+@app.post('/product', status_code=status.HTTP_201_CREATED, tags=['Products'])
 def add(request: schemas.Product, db: Session = Depends(get_db)):
     new_product = models.Product(
         name=request.name, description=request.description, price=request.price,
@@ -63,7 +78,8 @@ def add(request: schemas.Product, db: Session = Depends(get_db)):
     db.refresh(new_product)
     return request
 
-@app.post('/seller', response_model=schemas.DisplaySeller, status_code=status.HTTP_201_CREATED)
+
+@app.post('/seller', response_model=schemas.DisplaySeller, status_code=status.HTTP_201_CREATED, tags=['Seller'])
 def create_seller(request: schemas.Seller, db: Session = Depends(get_db)):
     hashed_password = pwd_context.hash(request.password)
     new_seller = models.Seller(
