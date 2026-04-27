@@ -4,3 +4,8 @@ uvicorn
 pydantic
 passlib
 bcrypt
+python-jose
+python-multipart
+pydantic-settings 
+python-dotenv
+email-validator

@@ -12,10 +12,17 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-Run
+Run:
 ```bash
 uvicorn product.main:app --reload
 ```
+---
+
+To generate a random string, that can be used as a key, open a new terminal and run:
+```bash
+openssl rand -hex 32
+```
+
 ---
 
 Notes:
